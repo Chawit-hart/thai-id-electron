@@ -1,0 +1,38 @@
+{
+  "name": "thai-id-electron",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "electron .",
+    "build": "echo 'No build needed for JS project",
+    "pack": "electron-builder",
+    "rebuild": "electron-rebuild",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "com.thaiid.reader",
+    "productName": "Thai ID Reader",
+    "files": [
+      "src/**/*",
+      "public/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "pcsclite": "^1.0.1"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "electron-builder": "^26.0.12",
+    "electron": "^35.1.5",
+    "electron-rebuild": "^3.2.9"
+  }
+}

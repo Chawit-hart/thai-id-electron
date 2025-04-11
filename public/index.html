@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Thai ID Reader</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    button { font-size: 1.2rem; padding: 0.5rem 1rem; }
+    pre { background: #eee; padding: 1rem; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>📥 Thai National ID Reader</h1>
+  <button onclick="readCard()">อ่านบัตรประชาชน</button>
+  <pre id="result">รออ่านข้อมูล...</pre>
+
+  <script>
+    const readCard = async () => {
+      const result = await window.electronAPI.readCard()
+      document.getElementById('result').innerText = JSON.stringify(result, null, 2)
+    }
+  </script>
+</body>
+</html>
