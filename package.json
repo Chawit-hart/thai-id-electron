@@ -16,6 +16,7 @@
     "files": [
       "src/**/*",
       "public/**/*",
+      "data/**/*",
       "node_modules/**/*",
       "package.json"
     ]
@@ -26,13 +27,15 @@
   "description": "",
   "dependencies": {
     "cors": "^2.8.5",
+    "exceljs": "^4.4.0",
     "express": "^5.1.0",
-    "pcsclite": "^1.0.1"
+    "pcsclite": "^1.0.1",
+    "thai-address-database": "^0.0.30"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
-    "electron-builder": "^26.0.12",
     "electron": "^35.1.5",
+    "electron-builder": "^26.0.12",
     "electron-rebuild": "^3.2.9"
   }
 }

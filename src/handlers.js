@@ -1,5 +1,5 @@
 const { APDU_COMMANDS, CMD_GET_RESPONSE } = require("./apdu");
-const { decodeThai, formatDate, formatGender, splitFullName } = require("./utils");
+const { decodeThai, formatDate, formatGender, splitFullName, parseAddress } = require("./utils");
 
 const readCardData = (reader, protocol) => {
   const keys = Object.keys(APDU_COMMANDS);
@@ -24,7 +24,7 @@ const readCardData = (reader, protocol) => {
         if (err) {
           console.error(`❌ อ่านข้อมูล ${label} ไม่สำเร็จ:`, err.message);
           result[key] = null;
-          return next(); // ไปอ่านช่องถัดไป
+          return next();
         }
 
         try {
@@ -35,7 +35,7 @@ const readCardData = (reader, protocol) => {
           result[key] = null;
         }
 
-        next(); // อ่านถัดไป
+        next();
       });
     }
 
@@ -81,19 +81,22 @@ const formatData = (value, key) => {
   if (key === "fullNameThai" || key === "fullNameEng") {
     return splitFullName(value);
   }
+  if (key === "address") {
+    return parseAddress(value);
+  }
   return value;
 };
 
 const getLabel = (key) => ({
-  cid: "🆔 เลขบัตรประชาชน",
-  fullNameThai: "👤 ชื่อ-นามสกุล (ไทย)",
-  fullNameEng: "👤 ชื่อ-นามสกุล (อังกฤษ)",
-  birthDate: "🎂 วันเกิด",
-  gender: "⚧ เพศ",
-  address: "🏠 ที่อยู่",
-  issueDate: "📅 วันออกบัตร",
-  expiryDate: "⏳ วันหมดอายุ",
-  religion: "🛐 ศาสนา",
+  cid: "เลขบัตรประชาชน",
+  fullNameThai: "ชื่อ-นามสกุล (ไทย)",
+  fullNameEng: "ชื่อ-นามสกุล (อังกฤษ)",
+  birthDate: "วันเกิด",
+  gender: "เพศ",
+  address: "ที่อยู่",
+  issueDate: "วันออกบัตร",
+  expiryDate: "วันหมดอายุ",
+  religion: "ศาสนา",
 }[key] || key);
 
 const getExpectedLength = (key) =>
