@@ -2,38 +2,43 @@ const pcsclite = require("pcsclite");
 const { SELECT_THAI_ID_CARD } = require("./apdu");
 const { readCardData } = require("./handlers");
 
-const disconnectAsync = (reader) => {
-  return new Promise((resolve, reject) => {
+const disconnectAsync = (reader) =>
+  new Promise((resolve, reject) => {
     reader.disconnect(reader.SCARD_LEAVE_CARD, (err) => {
-      if (err) reject(err);
-      else resolve();
+      if (err) {
+        console.warn("⚠️ Disconnect failed:", err.message);
+        return reject(err);
+      }
+      resolve();
     });
   });
-};
 
-const connectAsync = (reader) => {
-  return new Promise((resolve, reject) => {
-    reader.connect(
-      {
-        share_mode: reader.SCARD_SHARE_SHARED,
-        protocol: reader.SCARD_PROTOCOL_T0 | reader.SCARD_PROTOCOL_T1
-      },
-      (err, protocol) => {
-        if (err) return reject(err);
-        resolve(protocol);
-      }
-    );
+const connectAsync = (reader) =>
+  new Promise((resolve, reject) => {
+    reader.disconnect(reader.SCARD_LEAVE_CARD, () => {
+      reader.connect(
+        {
+          share_mode: reader.SCARD_SHARE_SHARED,
+          protocol: reader.SCARD_PROTOCOL_T0 | reader.SCARD_PROTOCOL_T1,
+        },
+        (err, protocol) => {
+          if (err) return reject(new Error(`❌ Connect error: ${err.message}`));
+          if (typeof protocol !== "number") {
+            return reject(new Error("❌ Invalid protocol returned from reader.connect"));
+          }
+          resolve(protocol);
+        }
+      );
+    });
   });
-};
 
-const transmitAsync = (reader, command, protocol) => {
-  return new Promise((resolve, reject) => {
+const transmitAsync = (reader, command, protocol) =>
+  new Promise((resolve, reject) => {
     reader.transmit(command, 255, protocol, (err, response) => {
-      if (err) return reject(err);
+      if (err) return reject(new Error(`❌ Transmit error: ${err.message}`));
       resolve(response);
     });
   });
-};
 
 const handleCardInsert = async (reader) => {
   try {
@@ -57,12 +62,9 @@ const initializeReaderAndRead = () => {
 
     pcsc.on("reader", (reader) => {
       reader.on("status", async (status) => {
-        const changes = reader.state ^ status.state;
-        const cardInserted =
-          changes & reader.SCARD_STATE_PRESENT &&
-          status.state & reader.SCARD_STATE_PRESENT;
+        const isCardInserted = status.state & reader.SCARD_STATE_PRESENT;
 
-        if (cardInserted && !hasResolved) {
+        if (isCardInserted && !hasResolved) {
           hasResolved = true;
           clearTimeout(timeoutId);
 
@@ -77,6 +79,10 @@ const initializeReaderAndRead = () => {
         }
       });
 
+      setTimeout(() => {
+        reader.emit("status", reader);
+      }, 50);
+
       timeoutId = setTimeout(() => {
         if (!hasResolved) {
           pcsc.close();
@@ -86,7 +92,7 @@ const initializeReaderAndRead = () => {
     });
 
     pcsc.on("error", (err) => {
-      reject(err);
+      reject(new Error(`❌ PCSC error: ${err.message}`));
     });
   });
 };
