@@ -88,7 +88,7 @@ const initializeReaderAndRead = () => {
           pcsc.close();
           reject(new Error("ยังไม่ได้เสียบบัตร"));
         }
-      }, 10000);
+      }, 30000);
     });
 
     pcsc.on("error", (err) => {

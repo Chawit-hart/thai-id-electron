@@ -91,7 +91,7 @@ Reads data from a Thai national ID card inserted into a smart card reader connec
   }
 }
 ```
-If reading fails or no card is inserted within 10 seconds, you'll receive:
+If reading fails or no card is inserted within 30 seconds, you'll receive:
 
 ```json
 {
